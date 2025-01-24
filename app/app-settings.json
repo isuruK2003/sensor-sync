@@ -1,0 +1,7 @@
+{
+    "network": {
+        "socket_url": ""
+    },
+    "update_interval": 400,
+    "decimal_positions": 6
+}
