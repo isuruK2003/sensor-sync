@@ -19,19 +19,17 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: "#fff",
         padding: 15,
-        
-        // shadowColor: "#666",
-        // shadowOffset: { width: 0, height: 4 },
-        // shadowOpacity: 0.1,
-        // shadowRadius: 4,
-        // elevation: 5,
-        
-        // margin: 8,
-        // marginBottom: 4,
 
-        borderRadius: 4,
-        borderBottomWidth: 1,
-        borderBottomColor: "#ccc"
+        shadowColor: "#666",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 5,
+
+        margin: 8,
+        marginBottom: 4,
+
+        borderRadius: 8,
     },
     title: {
         fontSize: 18,

@@ -1,6 +1,11 @@
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import EvilIcons from 'react-native-vector-icons/EvilIcons';
+import Entypo from 'react-native-vector-icons/Entypo';
+import Feather from 'react-native-vector-icons/Feather';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
 import { IconProps } from "react-native-vector-icons/Icon";
 
 type IconLibrary = {
@@ -11,11 +16,15 @@ const iconLibraries: IconLibrary = {
   "ionicon": Ionicons,
   "material": MaterialIcons,
   "fontawesome": FontAwesome,
+  "evilicon": EvilIcons,
+  "entypo": Entypo,
+  "feather": Feather,
+  "materialcommunityicons": MaterialCommunityIcons,
 };
 
 export function Icon({
   type = "ionicon",
-  name = "alert-circle",
+  name = "help-outline",
   size = 24,
   color = "black",
 }: {

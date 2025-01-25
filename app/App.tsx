@@ -7,7 +7,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import Home from "./screens/Home";
 import Settings from "./screens/Settings";
 
-import { Icon } from './fragments/dynamic-icon';
+import { Icon } from './fragments/icon';
 
 const BottomTab = createBottomTabNavigator();
 const BottomTabGroup = () => (
