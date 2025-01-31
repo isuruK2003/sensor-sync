@@ -1,8 +1,17 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 
-export function Card({ title, content }: { title: string, content: string[] }) {
+interface CardProps {
+    title: string;
+    content: string[];
+    onPress?: () => void;
+}
+
+export function Card({ title, content, onPress }: CardProps) {
     return (
-        <View style={styles.container}>
+        <Pressable onPress={onPress} style={({ pressed }) => [
+            styles.container,
+            pressed && styles.pressed
+        ]}>
             <Text style={styles.title}>{title}</Text>
             <View style={styles.contentContainer}>
                 {content.map((item, index) => (
@@ -11,7 +20,7 @@ export function Card({ title, content }: { title: string, content: string[] }) {
                     </Text>
                 ))}
             </View>
-        </View>
+        </Pressable>
     );
 }
 
@@ -30,6 +39,9 @@ const styles = StyleSheet.create({
         marginBottom: 4,
 
         borderRadius: 8,
+    },
+    pressed: {
+        opacity: 0.7,
     },
     title: {
         fontSize: 18,
