@@ -5,18 +5,20 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 
 import Home from "./screens/Home";
-import Settings from "./screens/Settings";
+import Stream from "./screens/Stream";
 import Chart from "./screens/Chart";
 
-import { Icon } from './fragments/icon';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import Octicons from 'react-native-vector-icons/Octicons';
+
 import { createStackNavigator } from "@react-navigation/stack";
 
 const HomeStackNavigator = createStackNavigator();
 function HomeStack() {
   return (
     <HomeStackNavigator.Navigator>
-      <HomeStackNavigator.Screen name="Home" component={Home} />
-      <HomeStackNavigator.Screen name="Chart" component={Chart} />
+      <HomeStackNavigator.Screen name="HomeScreen" component={Home} />
+      <HomeStackNavigator.Screen name="ChartScreen" component={Chart} />
     </HomeStackNavigator.Navigator>
   );
 }
@@ -26,24 +28,38 @@ const BottomTabGroup = () => (
   <BottomTab.Navigator
     screenOptions={({ route }) => ({
       tabBarIcon: ({ color, focused, size }) => {
-        let iconName;
-        let iconLib = "ionicon";
-
         if (route.name === "Home") {
-          iconName = focused ? "home" : "home-outline";
-        } else if (route.name === "Settings") {
-          iconName = focused ? "cog" : "cog-outline";
+          return (
+            <Ionicons
+              name={focused ? "home" : "home-outline"}
+              size={size}
+              color={color}
+            />
+          );
+        } else if (route.name === "Stream") {
+          return (
+            <Octicons
+              name={focused ? "broadcast" : "broadcast"}
+              size={size}
+              color={color}
+            />
+          );
         } else if (route.name === "Plots") {
-          iconName = focused ? "analytics" : "analytics-outline";
+          return (
+            <Ionicons
+              name={focused ? "analytics" : "analytics-outline"}
+              size={size}
+              color={color}
+            />
+          );
         }
-        return <Icon name={iconName} type={iconLib} size={size} color={color} />;
       },
       tabBarActiveTintColor: '#000',
       tabBarInactiveTintColor: '#666',
     })}
   >
     <BottomTab.Screen name="Home" component={HomeStack} options={{ headerShown: false }} />
-    <BottomTab.Screen name="Settings" component={Settings} />
+    <BottomTab.Screen name="Stream" component={Stream} />
   </BottomTab.Navigator>
 );
 

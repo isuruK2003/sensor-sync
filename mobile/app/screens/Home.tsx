@@ -1,30 +1,13 @@
-import { View } from "react-native";
+import { Platform, StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import {
     useAccelerometer,
     useGyroscope,
     useMagnetometer
 } from "../hooks/sensor-service";
-import { Card } from "../fragments/cards";
 import { useSettings } from "../hooks/settings-services";
-import { useNavigation } from "@react-navigation/native";
-
-import { StackNavigationProp } from "@react-navigation/stack";
-
-type HomeStackParamList = {
-    Home: undefined;
-    Chart: undefined;
-};
-
-type HomeScreenNavigationProp = StackNavigationProp<HomeStackParamList, "Home">;
-
 
 export default function Home() {
-    const navigation = useNavigation<HomeScreenNavigationProp>();
-
     const { settings } = useSettings();
-    const accData = useAccelerometer();
-    const gyrData = useGyroscope();
-    const magData = useMagnetometer();
 
     const formatSensorData = (data: any) => {
         return data && data ? [
@@ -34,23 +17,75 @@ export default function Home() {
         ] : ["Data not available"];
     };
 
+    const cards = [
+        {
+            title: "Accelerometer",
+            data: useAccelerometer()
+        },
+        {
+            title: "Gyroscope",
+            data: useGyroscope()
+        },
+        {
+            title: "Magnetometer",
+            data: useMagnetometer()
+        }
+    ];
+
     return (
         <View>
-            <Card
-                title="Accelerometer"
-                content={formatSensorData(accData)}
-                onPress={() => navigation.navigate('Chart')}
-            />
-            <Card
-                title="Gyroscope"
-                content={formatSensorData(gyrData)}
-                onPress={() => navigation.navigate('Chart')}
-            />
-            <Card
-                title="Magnetometer"
-                content={formatSensorData(magData)}
-                onPress={() => navigation.navigate('Chart')}
-            />
+            {cards.map((card, index) => (
+                <TouchableHighlight
+                    key={index}
+                    onPress={() => { }}
+                    style={styles.container}
+                    underlayColor="#f0f0f0"
+                >
+                    <View>
+                        <Text style={styles.title}>{card.title}</Text>
+                        <View style={styles.contentContainer}>
+                            {formatSensorData(card.data).map((text, i) => (
+                                <Text key={i} style={styles.contentText}>{text}</Text>
+                            ))}
+                        </View>
+                    </View>
+                </TouchableHighlight>
+            ))}
         </View>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        backgroundColor: "#fff",
+        padding: 15,
+
+        shadowColor: "#666",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 5,
+
+        margin: 8,
+        marginBottom: 4,
+
+        borderRadius: 8,
+    },
+    pressed: {
+        opacity: 0.7,
+    },
+    title: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginBottom: 10,
+    },
+    contentContainer: {
+        paddingLeft: 10,
+    },
+    contentText: {
+        fontSize: 14,
+        color: "#333",
+        marginBottom: 5,
+        fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace'
+    }
+});

@@ -3,7 +3,7 @@ import { Alert, Platform, StyleSheet, Text, TextInput, TouchableHighlight, View 
 import { SensorData, useGyroscope } from '../hooks/sensor-service';
 import uuid from 'react-native-uuid';
 
-export default function Settings() {
+export default function Stream() {
     const [domain, setDomain] = useState<string>('192.168.8.170');
     const [port, setPort] = useState<string>('8000');
     const [websocket, setWebsocket] = useState<WebSocket>();
