@@ -1,31 +1,23 @@
 import { useEffect, useState } from "react";
 
-import {
-    Accelerometer,
-    Gyroscope,
-    Magnetometer
-} from 'expo-sensors';
+import { Accelerometer, Gyroscope, Magnetometer } from 'expo-sensors';
 import { useSettings } from "./settings-services";
 
-interface CoordData {
+export interface SensorData {
+    t: number,
     x: number,
     y: number,
     z: number
 }
 
-interface SensorData {
-    value: CoordData | number
-}
-
-
-export function useAccelerometer() {
+export function useAccelerometer(): SensorData | null {
     const { settings } = useSettings();
     const [data, setData] = useState<SensorData | null>(null);
 
     useEffect(() => {
         Accelerometer.setUpdateInterval(settings.update_interval);
         const subscription = Accelerometer.addListener((data) => {
-            setData({ value: { x: data.x, y: data.y, z: data.z } });
+            setData({ t: data.timestamp, x: data.x, y: data.y, z: data.z });
         });
 
         return () => {
@@ -36,14 +28,14 @@ export function useAccelerometer() {
     return data;
 }
 
-export function useGyroscope() {
+export function useGyroscope(): SensorData | null {
     const { settings } = useSettings();
     const [data, setData] = useState<SensorData | null>(null);
 
     useEffect(() => {
         Gyroscope.setUpdateInterval(settings.update_interval);
         const subscription = Gyroscope.addListener((data) => {
-            setData({ value: { x: data.x, y: data.y, z: data.z } });
+            setData({ t: data.timestamp, x: data.x, y: data.y, z: data.z });
         });
 
         return () => {
@@ -54,14 +46,14 @@ export function useGyroscope() {
     return data;
 }
 
-export function useMagnetometer() {
+export function useMagnetometer(): SensorData | null {
     const { settings } = useSettings();
     const [data, setData] = useState<SensorData | null>(null);
 
     useEffect(() => {
         Magnetometer.setUpdateInterval(settings.update_interval);
         const subscription = Magnetometer.addListener((data) => {
-            setData({ value: { x: data.x, y: data.y, z: data.z } });
+            setData({ t: data.timestamp, x: data.x, y: data.y, z: data.z });
         });
 
         return () => {

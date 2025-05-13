@@ -27,10 +27,10 @@ export default function Home() {
     const magData = useMagnetometer();
 
     const formatSensorData = (data: any) => {
-        return data && data.value ? [
-            `x: ${data.value.x.toFixed(settings.decimal_positions)}`,
-            `y: ${data.value.y.toFixed(settings.decimal_positions)}`,
-            `z: ${data.value.z.toFixed(settings.decimal_positions)}`
+        return data && data ? [
+            `x: ${data.x.toFixed(settings.decimal_positions)}`,
+            `y: ${data.y.toFixed(settings.decimal_positions)}`,
+            `z: ${data.z.toFixed(settings.decimal_positions)}`
         ] : ["Data not available"];
     };
 

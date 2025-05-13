@@ -6,7 +6,7 @@ app = FastAPI()
 
 # Optional: Define a Pydantic model for data validation
 class SensorData(BaseModel):
-    t: int
+    t: float
     x: float
     y: float
     z: float
@@ -39,21 +39,15 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
             # Receive JSON data
             data = await websocket.receive_json()
             # Validate data (optional step using Pydantic)
-            sensor_data = SensorData(**data)
-
-            # Send personal confirmation as JSON
-            await manager.send_personal_json({
-                "status": "received",
-                "your_data": data
-            }, websocket)
+            gyro_data = SensorData(**data)
 
             # Broadcast JSON to all clients
             await manager.broadcast_json({
                 "client_id": client_id,
-                "t": sensor_data.t,
-                "x": sensor_data.x,
-                "y": sensor_data.y,
-                "z": sensor_data.z
+                "t": gyro_data.t,
+                "x": gyro_data.x,
+                "y": gyro_data.y,
+                "z": gyro_data.z
             })
     except WebSocketDisconnect:
         manager.disconnect(websocket)
