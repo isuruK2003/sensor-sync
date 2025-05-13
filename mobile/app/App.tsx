@@ -4,9 +4,9 @@ import { StatusBar } from "expo-status-bar";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 
-import Home from "./screens/Home";
-import Stream from "./screens/Stream";
-import Chart from "./screens/Chart";
+import HomeScreen from "./screens/Home";
+import StreamScreen from "./screens/Stream";
+import ChartScreen from "./screens/Chart";
 
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Octicons from 'react-native-vector-icons/Octicons';
@@ -17,8 +17,8 @@ const HomeStackNavigator = createStackNavigator();
 function HomeStack() {
   return (
     <HomeStackNavigator.Navigator>
-      <HomeStackNavigator.Screen name="HomeScreen" component={Home} />
-      <HomeStackNavigator.Screen name="ChartScreen" component={Chart} />
+      <HomeStackNavigator.Screen name="Home" component={HomeScreen} />
+      <HomeStackNavigator.Screen name="Chart" component={ChartScreen} />
     </HomeStackNavigator.Navigator>
   );
 }
@@ -59,7 +59,7 @@ const BottomTabGroup = () => (
     })}
   >
     <BottomTab.Screen name="Home" component={HomeStack} options={{ headerShown: false }} />
-    <BottomTab.Screen name="Stream" component={Stream} />
+    <BottomTab.Screen name="Stream" component={StreamScreen} />
   </BottomTab.Navigator>
 );
 

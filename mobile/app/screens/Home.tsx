@@ -6,14 +6,14 @@ import {
 } from "../hooks/sensor-service";
 import { useSettings } from "../hooks/settings-services";
 
-export default function Home() {
+export default function HomeScreen() {
     const { settings } = useSettings();
 
     const formatSensorData = (data: any) => {
         return data && data ? [
-            `x: ${data.x.toFixed(settings.decimal_positions)}`,
-            `y: ${data.y.toFixed(settings.decimal_positions)}`,
-            `z: ${data.z.toFixed(settings.decimal_positions)}`
+            `X : ${data.x.toFixed(settings.decimal_positions)}`,
+            `Y : ${data.y.toFixed(settings.decimal_positions)}`,
+            `Z : ${data.z.toFixed(settings.decimal_positions)}`
         ] : ["Data not available"];
     };
 
