@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Platform, Pressable, StyleSheet, Text, TextInput, TouchableHighlight, TouchableWithoutFeedback, View } from 'react-native';
+import { Alert, Platform, StyleSheet, Text, TextInput, TouchableHighlight, View } from 'react-native';
 import { SensorData, useGyroscope } from '../hooks/sensor-service';
-// import uuid
+import uuid from 'react-native-uuid';
 
 export default function Settings() {
     const [domain, setDomain] = useState<string>('192.168.8.170');
@@ -10,10 +10,8 @@ export default function Settings() {
     const gyroData: SensorData | null = useGyroscope();
 
     const handelConnect = () => {
-        console.log("Pressed");
-
         try {
-            const url: string = `ws://${domain}:${port}/ws/gyro/${123}`;
+            const url: string = `ws://${domain}:${port}/ws/gyro/${uuid.v4()}`;
 
             const ws = new WebSocket(url);
 
@@ -31,10 +29,6 @@ export default function Settings() {
                 ]);
             };
 
-            ws.onmessage = (e) => {
-                console.log(e.data);
-            };
-
             ws.onerror = (e) => {
                 Alert.alert('Error Occurred', `An error occurred when establishing the connection`, [
                     {
@@ -50,7 +44,17 @@ export default function Settings() {
             };
 
             ws.onclose = (e) => {
-                console.log(e.code, e.reason);
+                Alert.alert('Connection Closed', `Connection to ${url} successfully closed`, [
+                    {
+                        text: 'OK',
+                        onPress: () => console.log('OK Pressed')
+                    },
+                    {
+                        text: 'Cancel',
+                        onPress: () => console.log('Cancel Pressed'),
+                        style: 'cancel',
+                    },
+                ]);
             };
 
             setWebsocket(ws);
@@ -68,9 +72,7 @@ export default function Settings() {
     useEffect(() => {
         if (websocket !== null && websocket?.readyState === WebSocket.OPEN && gyroData !== null) {
             websocket.send(JSON.stringify(gyroData));
-            console.log(gyroData);
         }
-
     }, [gyroData]);
 
     return (
