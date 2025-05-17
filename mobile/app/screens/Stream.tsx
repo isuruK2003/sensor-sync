@@ -17,43 +17,12 @@ export default function StreamScreen() {
 
                 const ws = new WebSocket(url);
 
-                ws.onopen = () => {
-                    Alert.alert('Connection Established', `Successfully connected to the server at ${domain}.`, [
-                        {
-                            text: 'OK',
-                        },
-                        {
-                            text: 'Cancel',
-                            style: 'cancel',
-                        },
-                    ]);
-                };
-
-                ws.onerror = (e) => {
-                    Alert.alert('Connection Failed', `Unable to establish a connection to the server. Please check the server address or try again later.`, [
-                        {
-                            text: 'OK',
-                        },
-                        {
-                            text: 'Cancel',
-                            style: 'cancel',
-                        },
-                    ]);
-                };
-
-                ws.onclose = (e) => {
-                    Alert.alert('Connection Terminated', `The WebSocket connection to ${domain} has been closed.`, [
-                        {
-                            text: 'OK',
-                        },
-                        {
-                            text: 'Cancel',
-                            style: 'cancel',
-                        },
-                    ]);
-                };
+                ws.onopen = () => Alert.alert('Connection Established', `Successfully connected to the server at ${domain}.`);
+                ws.onerror = (e) => Alert.alert('Connection Failed', `Unable to establish a connection to the server. Please check the server address or try again later.`);
+                ws.onclose = (e) => Alert.alert('Connection Terminated', `The WebSocket connection to ${domain} has been closed.`);
 
                 setWebsocket(ws);
+
             } catch (error) {
                 Alert.alert("Unexpected Error", "An unexpected error occurred. Please try again later.");
             }
