@@ -10,58 +10,56 @@ export default function StreamScreen() {
     const gyroData: SensorData | null = useGyroscope();
 
     const handelConnect = () => {
-        try {
-            const url: string = `ws://${domain}:${port}/ws/gyro/${uuid.v4()}`;
 
-            const ws = new WebSocket(url);
+        if (websocket === undefined || websocket?.readyState === WebSocket.CLOSED) {
+            try {
+                const url: string = `ws://${domain}:${port}/ws/gyro/${uuid.v4()}`;
 
-            ws.onopen = () => {
-                Alert.alert('Connection Success', `Successfully connected to ${url}`, [
-                    {
-                        text: 'OK',
-                        onPress: () => console.log('OK Pressed')
-                    },
-                    {
-                        text: 'Cancel',
-                        onPress: () => console.log('Cancel Pressed'),
-                        style: 'cancel',
-                    },
-                ]);
-            };
+                const ws = new WebSocket(url);
 
-            ws.onerror = (e) => {
-                Alert.alert('Error Occurred', `An error occurred when establishing the connection`, [
-                    {
-                        text: 'OK',
-                        onPress: () => console.log('OK Pressed')
-                    },
-                    {
-                        text: 'Cancel',
-                        onPress: () => console.log('Cancel Pressed'),
-                        style: 'cancel',
-                    },
-                ]);
-            };
+                ws.onopen = () => {
+                    Alert.alert('Connection Established', `Successfully connected to the server at ${domain}.`, [
+                        {
+                            text: 'OK',
+                        },
+                        {
+                            text: 'Cancel',
+                            style: 'cancel',
+                        },
+                    ]);
+                };
 
-            ws.onclose = (e) => {
-                Alert.alert('Connection Closed', `Connection to ${url} successfully closed`, [
-                    {
-                        text: 'OK',
-                        onPress: () => console.log('OK Pressed')
-                    },
-                    {
-                        text: 'Cancel',
-                        onPress: () => console.log('Cancel Pressed'),
-                        style: 'cancel',
-                    },
-                ]);
-            };
+                ws.onerror = (e) => {
+                    Alert.alert('Connection Failed', `Unable to establish a connection to the server. Please check the server address or try again later.`, [
+                        {
+                            text: 'OK',
+                        },
+                        {
+                            text: 'Cancel',
+                            style: 'cancel',
+                        },
+                    ]);
+                };
 
-            setWebsocket(ws);
-        } catch (error) {
-            Alert.alert("Error Occurred", "An unknown error occurred. Please try again after some time.")
+                ws.onclose = (e) => {
+                    Alert.alert('Connection Terminated', `The WebSocket connection to ${domain} has been closed.`, [
+                        {
+                            text: 'OK',
+                        },
+                        {
+                            text: 'Cancel',
+                            style: 'cancel',
+                        },
+                    ]);
+                };
+
+                setWebsocket(ws);
+            } catch (error) {
+                Alert.alert("Unexpected Error", "An unexpected error occurred. Please try again later.");
+            }
         }
     };
+
 
     const handleDisconnect = () => {
         if (websocket?.readyState == WebSocket.OPEN) {
@@ -92,28 +90,31 @@ export default function StreamScreen() {
                 placeholder="Port Number"
                 placeholderTextColor="#999"
             />
-            <TouchableHighlight
-                onPress={handelConnect}
-                underlayColor="#fff"
-                activeOpacity={0.5}
-                disabled={websocket?.readyState === WebSocket.CONNECTING ? true : false}
-            >
-                <View style={styles.button}>
-                    <Text style={styles.buttonText}>
-                        {websocket?.readyState === WebSocket.CONNECTING ? "Connecting ... " : "Connect"}
-                    </Text>
-                </View>
-            </TouchableHighlight>
-            <TouchableHighlight
-                onPress={handleDisconnect}
-                underlayColor="#fff"
-                activeOpacity={0.5}
-                disabled={websocket?.readyState === WebSocket.OPEN ? false : true}
-            >
-                <View style={styles.button}>
-                    <Text style={styles.buttonText}>Disconnect</Text>
-                </View>
-            </TouchableHighlight>
+            {websocket?.readyState === WebSocket.OPEN ?
+                <TouchableHighlight
+                    onPress={handleDisconnect}
+                    underlayColor="#fff"
+                    activeOpacity={0.5}
+                >
+                    <View style={styles.button}>
+                        <Text style={styles.buttonText}>
+                            Disconnect
+                        </Text>
+                    </View>
+                </TouchableHighlight>
+                :
+                <TouchableHighlight
+                    onPress={handelConnect}
+                    underlayColor="#fff"
+                    activeOpacity={0.5}
+                >
+                    <View style={styles.button}>
+                        <Text style={styles.buttonText}>
+                            {websocket?.readyState === WebSocket.CONNECTING ? "Connecting ... " : "Connect"}
+                        </Text>
+                    </View>
+                </TouchableHighlight>
+            }
         </View>
     );
 };
