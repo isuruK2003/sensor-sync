@@ -1,129 +1,79 @@
 "use client"
 
+import { EthernetPort, Globe } from "lucide-react";
 import { useEffect, useState } from "react";
-import { v4 as uuidv4 } from 'uuid';
-import { LineChart } from "./chart";
-import { SensorData } from "./sensor-data";
+import { showAlert } from "./components/alert";
+import { v4 as uuid } from 'uuid'
 
 export default function Home() {
-  const [domain, setDomain] = useState<string>('192.168.8.170');
-  const [port, setPort] = useState<string>('8000');
+
   const [websocket, setWebsocket] = useState<WebSocket>();
-  const [data, setData] = useState<SensorData[]>([]);
-  const [maxLength, setMaxLength] = useState<number>(100);
-  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [domain, setDomain] = useState<string>("");
+  const [port, setPort] = useState<string>("");
 
-  const handleConnect = () => {
-    try {
-      const url: string = `ws://${domain}:${port}/ws/gyro/${uuidv4()}`;
-      const ws = new WebSocket(url);
+  const handelConnect = () => {
 
-      ws.onopen = () => {
-        alert('Connection Success');
-        setIsConnected(true);
-      };
+    if (websocket === undefined || websocket?.readyState === WebSocket.CLOSED) {
+      try {
+        const url: string = `ws://${domain}:${port}/ws/gyro/${uuid()}`;
 
-      ws.onmessage = (event) => {
-        try {
-          const newData: SensorData = JSON.parse(event.data);
-          setData(prevData => {
-            // Keep only the last 100 data points for performance
-            const updatedData = [...prevData, newData];
-            return updatedData.slice(-maxLength);
-          });
-        } catch (error) {
-          console.error('Error parsing WebSocket data:', error);
-        }
-      };
+        const ws = new WebSocket(url);
 
-      ws.onerror = (e) => {
-        alert('Error Occurred');
-        setIsConnected(false);
-      };
+        ws.onopen = () => showAlert('Connection Established', `Successfully connected to the server at ${domain}.`);
+        ws.onerror = () => showAlert('Connection Failed', `Unable to establish a connection to the server. Please check the server address or try again later.`);
+        ws.onclose = () => showAlert('Connection Terminated', `The WebSocket connection to ${domain} has been closed.`);
 
-      ws.onclose = (e) => {
-        alert('Connection Closed');
-        setIsConnected(false);
-      };
+        setWebsocket(ws);
 
-      setWebsocket(ws);
-    } catch (error) {
-      alert("Error Occurred");
-      setIsConnected(false);
+      } catch (error) {
+        showAlert("Unexpected Error", "An unexpected error occurred. Please try again later.");
+      }
     }
   };
 
-  const handleDisconnect = () => {
-    if (websocket?.readyState === WebSocket.OPEN) {
-      websocket.close();
-      setIsConnected(false);
-    }
-  }
-
-  // Clean up WebSocket connection on component unmount
   useEffect(() => {
-    return () => {
-      if (websocket?.readyState === WebSocket.OPEN) {
-        websocket.close();
-      }
-    };
-  }, [websocket]);
+
+  }, []);
 
   return (
-    <div className="p-8">
-      <div className="flex flex-col space-y-4 mb-8">
-        <div className="flex space-x-4">
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700">Domain</label>
+    <div className="flex flex-row h-screen">
+
+      {/* Sidebar */}
+      <div className="w-[350px] bg-[#111] border-r p-[16px] border-[#222] text-[#ddd] font-mono">
+        <div className="flex flex-col gap-[16px]">
+          <div className="grid grid-cols-[28px_auto] items-center gap-[16px]">
+            <Globe size={18} className="text-[#aaa]" />
             <input
-              type="text"
               value={domain}
-              onChange={(e) => setDomain(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
-            />
-          </div>
-          <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700">Port</label>
-            <input
+              className="w-full text-sm border border-[#333] py-2 px-3 focus:outline-none focus:ring-2 focus:ring-orange-500/75 rounded-xl bg-[#111]"
               type="text"
-              value={port}
-              onChange={(e) => setPort(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2 border"
+              placeholder="IP Address / Domain"
+              onChange={(event) => setDomain(event.target.value)}
             />
           </div>
-        </div>
-        <div className="flex space-x-4">
-          {!isConnected ? (
-            <button
-              onClick={handleConnect}
-              className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
-            >
-              Connect
-            </button>
-          ) : (
-            <button
-              onClick={handleDisconnect}
-              className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-            >
-              Disconnect
-            </button>
-          )}
+          <div className="grid grid-cols-[28px_auto] items-center gap-[16px]">
+            <EthernetPort size={18} className="text-[#aaa]" />
+            <input
+              value={port}
+              className="w-full text-sm border border-[#333] py-2 px-3 focus:outline-none focus:ring-2 focus:ring-orange-500/75 rounded-xl bg-[#111]"
+              type="text"
+              placeholder="Port"
+              onChange={(event) => setPort(event.target.value)}
+            />
+          </div>
+          <button
+            className="bg-orange-800 ring-orange-500 hover:bg-orange-700 py-[8px] cursor-pointer px-[4px] rounded-xl"
+            onClick={handelConnect}
+          >
+            Connect
+          </button>
         </div>
       </div>
 
-      <div className="p-4 rounded-lg shadow-md">
-        <h2 className="text-xl font-semibold mb-4">Sensor Data Visualization</h2>
-        {data.length > 0 ? (
-          <div>
-            <LineChart sensorData={data} height={600} width={800} />
-          </div>
-        ) : (
-          <div className="h-96 flex items-center justify-center bg-gray-100 rounded-md">
-            <p className="text-gray-500">
-              {isConnected ? "Waiting for data..." : "Not connected to WebSocket"}
-            </p>
-          </div>
-        )}
+      <hr className="text-[#222]" />
+
+      {/* Content */}
+      <div className="flex-1 relative p-4">
       </div>
     </div>
   );
