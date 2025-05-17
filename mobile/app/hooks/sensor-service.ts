@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
 import { Accelerometer, Gyroscope, Magnetometer } from 'expo-sensors';
-import { useSettings } from "./settings-services";
 
 export interface SensorData {
     t: number,
@@ -10,56 +9,49 @@ export interface SensorData {
     z: number
 }
 
-export function useAccelerometer(): SensorData | null {
-    const { settings } = useSettings();
-    const [data, setData] = useState<SensorData | null>(null);
-
-    useEffect(() => {
-        Accelerometer.setUpdateInterval(settings.update_interval);
-        const subscription = Accelerometer.addListener((data) => {
-            setData({ t: data.timestamp, x: data.x, y: data.y, z: data.z });
-        });
-
-        return () => {
-            subscription.remove();
-        };
-    }, [settings.update_interval]);
-
-    return data;
+export enum SensorType {
+    Accelerometer,
+    Gyroscope,
+    Magnetometer
 }
 
-export function useGyroscope(): SensorData | null {
-    const { settings } = useSettings();
-    const [data, setData] = useState<SensorData | null>(null);
-
-    useEffect(() => {
-        Gyroscope.setUpdateInterval(settings.update_interval);
-        const subscription = Gyroscope.addListener((data) => {
-            setData({ t: data.timestamp, x: data.x, y: data.y, z: data.z });
-        });
-
-        return () => {
-            subscription.remove();
-        };
-    }, [settings.update_interval]);
-
-    return data;
+export interface SensorConfig {
+    sensorType: SensorType
+    updateIntervalMillis?: number
 }
 
-export function useMagnetometer(): SensorData | null {
-    const { settings } = useSettings();
+const sensorTypeMap = {
+    [SensorType.Accelerometer]: Accelerometer,
+    [SensorType.Gyroscope]: Gyroscope,
+    [SensorType.Magnetometer]: Magnetometer
+}
+
+
+export function useSensor({ sensorType, updateIntervalMillis }: SensorConfig): SensorData | null {
     const [data, setData] = useState<SensorData | null>(null);
 
     useEffect(() => {
-        Magnetometer.setUpdateInterval(settings.update_interval);
-        const subscription = Magnetometer.addListener((data) => {
-            setData({ t: data.timestamp, x: data.x, y: data.y, z: data.z });
+
+        const sensor = sensorTypeMap[sensorType];
+
+        if (sensor == undefined) {
+            throw new Error(`${sensorType} is undefined`)
+        };
+
+        const subscription = sensor.addListener(sensorData => {
+            setData({
+                t: sensorData.timestamp,
+                x: sensorData.x,
+                y: sensorData.y,
+                z: sensorData.z
+            });
         });
 
         return () => {
             subscription.remove();
         };
-    }, [settings.update_interval]);
+
+    }, [sensorType, updateIntervalMillis]);
 
     return data;
 }

@@ -1,10 +1,6 @@
 import { Platform, StyleSheet, Text, TouchableHighlight, View } from "react-native";
-import {
-    useAccelerometer,
-    useGyroscope,
-    useMagnetometer
-} from "../hooks/sensor-service";
 import { useSettings } from "../hooks/settings-services";
+import { useSensor, SensorType } from "../hooks/sensor-service";
 
 export default function HomeScreen() {
     const { settings } = useSettings();
@@ -20,15 +16,15 @@ export default function HomeScreen() {
     const cards = [
         {
             title: "Accelerometer",
-            data: useAccelerometer()
+            data: useSensor({ sensorType: SensorType.Accelerometer, updateIntervalMillis: settings.update_interval })
         },
         {
             title: "Gyroscope",
-            data: useGyroscope()
+            data: useSensor({ sensorType: SensorType.Gyroscope, updateIntervalMillis: settings.update_interval })
         },
         {
             title: "Magnetometer",
-            data: useMagnetometer()
+            data: useSensor({ sensorType: SensorType.Magnetometer, updateIntervalMillis: settings.update_interval })
         }
     ];
 

@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Platform, StyleSheet, Text, TextInput, TouchableHighlight, View } from 'react-native';
-import { SensorData, useGyroscope } from '../hooks/sensor-service';
+import { SensorData, SensorType, useSensor } from '../hooks/sensor-service';
 import uuid from 'react-native-uuid';
 
 export default function StreamScreen() {
     const [domain, setDomain] = useState<string>('192.168.8.170');
     const [port, setPort] = useState<string>('8000');
     const [websocket, setWebsocket] = useState<WebSocket>();
-    const gyroData: SensorData | null = useGyroscope();
+    const gyroData: SensorData | null = useSensor({ sensorType: SensorType.Gyroscope });
 
     const handelConnect = () => {
 
@@ -18,8 +18,8 @@ export default function StreamScreen() {
                 const ws = new WebSocket(url);
 
                 ws.onopen = () => Alert.alert('Connection Established', `Successfully connected to the server at ${domain}.`);
-                ws.onerror = (e) => Alert.alert('Connection Failed', `Unable to establish a connection to the server. Please check the server address or try again later.`);
-                ws.onclose = (e) => Alert.alert('Connection Terminated', `The WebSocket connection to ${domain} has been closed.`);
+                ws.onerror = () => Alert.alert('Connection Failed', `Unable to establish a connection to the server. Please check the server address or try again later.`);
+                ws.onclose = () => Alert.alert('Connection Terminated', `The WebSocket connection to ${domain} has been closed.`);
 
                 setWebsocket(ws);
 
