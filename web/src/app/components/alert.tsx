@@ -80,7 +80,7 @@ export function Alert({ title, message, buttons, className, onClose }: AlertProp
 
     return (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className={`bg-[#111] rounded-xl border border-[#222] text-[#ddd] font-mono min-w-[450px] overflow-hidden ${className}`}>
+            <div className={`bg-[#111] rounded-xl border border-[#222] text-[#ddd] font-mono min-w-[400px] max-w-[600px] overflow-hidden ${className}`}>
                 <div className="p-[16px] pb-[24px] flex flex-col gap-[12px]">
                     <div className="flex justify-between items-center mb-2">
                         <span className="text-lg font-semibold">{title}</span>
