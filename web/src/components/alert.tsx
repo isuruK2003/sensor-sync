@@ -75,6 +75,12 @@ export function AlertButton({ text, type, onPress }: AlertButtonProps) {
 
 export function Alert({ title, message, buttons, className, onClose }: AlertProps) {
     const [isOpen, setIsOpen] = useState<boolean>(true);
+    const handleButtonPress = () => {
+        setIsOpen(false);
+        if (onClose) {
+            onClose();
+        }
+    };
 
     if (!isOpen) return null;
 
@@ -86,10 +92,10 @@ export function Alert({ title, message, buttons, className, onClose }: AlertProp
                         <span className="text-lg font-semibold">{title}</span>
                         <button
                             className="p-[8px] cursor-pointer hover:bg-white/10 active:bg-white/20 rounded-xl"
-                            onClick={() => {
-                                setIsOpen(false);
-                                if (onClose) {
-                                    onClose();
+                            onClick={handleButtonPress}
+                            onKeyUp={(event) => {
+                                if (event.key === "Enter" || event.key === " ") {
+                                    handleButtonPress();
                                 }
                             }}
                         >

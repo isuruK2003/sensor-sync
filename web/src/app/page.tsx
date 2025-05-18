@@ -1,39 +1,76 @@
 "use client"
 
 import { EthernetPort, Globe } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { showAlert } from "../components/alert";
 import { v4 as uuid } from 'uuid'
+import { SensorData } from "./sensor-data";
+
+enum ConnectionStatus {
+  CLOSED, CONNECTING, CONNECTED,
+  OPEN, DISCONNECTING, DISCONNECTED
+}
 
 export default function Home() {
 
-  const [websocket, setWebsocket] = useState<WebSocket>();
+  const [websocket, setWebsocket] = useState<WebSocket | null>(null);
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>(ConnectionStatus.CLOSED);
   const [domain, setDomain] = useState<string>("");
   const [port, setPort] = useState<string>("");
+  const [sensorData, setSensorData] = useState<SensorData[]>([]);
+  const [maxLength, setMaxLength] = useState<number>(50);
 
-  const handelConnect = () => {
+  const handleConnect = () => {
 
-    if (websocket === undefined || websocket?.readyState === WebSocket.CLOSED) {
+    if (websocket === null || websocket?.readyState === WebSocket.CLOSED) {
       try {
+        setConnectionStatus(ConnectionStatus.CONNECTING);
         const url: string = `ws://${domain}:${port}/ws/gyro/${uuid()}`;
 
         const ws = new WebSocket(url);
 
-        ws.onopen = () => showAlert('Connection Established', `Successfully connected to the server at ${domain}.`);
-        ws.onerror = () => showAlert('Connection Failed', `Unable to establish a connection to the server. Please check the server address or try again later.`);
-        ws.onclose = () => showAlert('Connection Terminated', `The WebSocket connection to ${domain} has been closed.`);
+        ws.onopen = () => {
+          showAlert('Connection Established', `Successfully connected to the server at ${domain}.`);
+          setConnectionStatus(ConnectionStatus.OPEN);
+        }
+
+        ws.onmessage = (event) => {
+          try {
+            const newData: SensorData = JSON.parse(event.data);
+            setSensorData(prevData => {
+              const updatedData = [...prevData, newData];
+              return updatedData.slice(-maxLength);
+            });
+          } catch (error) {
+            console.error('Error parsing WebSocket data:', error);
+            showAlert('Error Updating the Chart', 'An error occurred when updating the chart.');
+          }
+        };
+
+        ws.onerror = () => {
+          showAlert('Connection Failed', `Unable to establish a connection to the server. Please check the server address or try again later.`);
+        }
+
+        ws.onclose = () => {
+          showAlert('Connection Terminated', `The WebSocket connection to ${domain} has been closed.`);
+          setConnectionStatus(ConnectionStatus.CLOSED);
+        }
 
         setWebsocket(ws);
+        setConnectionStatus(ConnectionStatus.OPEN);
 
       } catch (error) {
         showAlert("Unexpected Error", "An unexpected error occurred. Please try again later.");
+        setConnectionStatus(ConnectionStatus.CLOSED);
       }
     }
   };
 
-  useEffect(() => {
-
-  }, []);
+  const handleDisconnect = () => {
+    if (websocket?.readyState == WebSocket.OPEN) {
+      websocket.close();
+    }
+  }
 
   return (
     <div className="flex flex-row h-screen">
@@ -61,19 +98,30 @@ export default function Home() {
               onChange={(event) => setPort(event.target.value)}
             />
           </div>
-          <button
-            className="bg-orange-800 ring-orange-500 hover:bg-orange-700 py-[8px] cursor-pointer px-[4px] rounded-xl"
-            onClick={handelConnect}
-          >
-            Connect
-          </button>
+          {
+            connectionStatus === ConnectionStatus.OPEN ?
+              <button
+                className="bg-orange-800 ring-orange-500 hover:bg-orange-700 py-[8px] cursor-pointer px-[4px] rounded-xl"
+                onClick={handleDisconnect}
+              >
+                Disconnect
+              </button>
+              :
+              <button
+                className="bg-orange-800 ring-orange-500 hover:bg-orange-700 py-[8px] cursor-pointer px-[4px] rounded-xl"
+                onClick={handleConnect}
+                disabled={connectionStatus === ConnectionStatus.CONNECTING}
+              >
+                {connectionStatus === ConnectionStatus.CONNECTING ? "Connecting..." : "Connect"}
+              </button>
+          }
         </div>
       </div>
 
       <hr className="text-[#222]" />
 
       {/* Content */}
-      <div className="flex-1 relative p-4">
+      <div className="w-full p-4 overflow-y-scroll space-y-[16px]">
       </div>
     </div>
   );
