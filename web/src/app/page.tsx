@@ -2,7 +2,7 @@
 
 import { EthernetPort, Globe } from "lucide-react";
 import { useEffect, useState } from "react";
-import { showAlert } from "./components/alert";
+import { showAlert } from "../components/alert";
 import { v4 as uuid } from 'uuid'
 
 export default function Home() {
