@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { Accelerometer, Gyroscope, Magnetometer } from 'expo-sensors';
+import { useSettings } from "./settings-services";
 
 export interface SensorData {
     t: number,
@@ -17,7 +18,7 @@ export enum SensorType {
 
 export interface SensorConfig {
     sensorType: SensorType
-    updateIntervalMillis?: number
+    updateIntervalMillis: number
 }
 
 const sensorTypeMap = {
@@ -37,6 +38,8 @@ export function useSensor({ sensorType, updateIntervalMillis }: SensorConfig): S
         if (sensor == undefined) {
             throw new Error(`${sensorType} is undefined`)
         };
+
+        sensor.setUpdateInterval(updateIntervalMillis);
 
         const subscription = sensor.addListener(sensorData => {
             setData({

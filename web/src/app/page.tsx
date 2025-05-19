@@ -5,6 +5,7 @@ import { useState } from "react";
 import { showAlert } from "../components/alert";
 import { v4 as uuid } from 'uuid'
 import { SensorData } from "./sensor-data";
+import { D3LinePlot } from "@/components/chart";
 
 enum ConnectionStatus {
   CLOSED, CONNECTING, CONNECTED,
@@ -122,6 +123,7 @@ export default function Home() {
 
       {/* Content */}
       <div className="w-full p-4 overflow-y-scroll space-y-[16px]">
+        <D3LinePlot sensorData={sensorData} className="w-full h-[600px]" />
       </div>
     </div>
   );

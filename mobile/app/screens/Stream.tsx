@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Alert, Platform, StyleSheet, Text, TextInput, TouchableHighlight, View } from 'react-native';
 import { SensorData, SensorType, useSensor } from '../hooks/sensor-service';
 import uuid from 'react-native-uuid';
+import { useSettings } from '../hooks/settings-services';
 
 export default function StreamScreen() {
     const [domain, setDomain] = useState<string>('192.168.8.170');
     const [port, setPort] = useState<string>('8000');
     const [websocket, setWebsocket] = useState<WebSocket>();
-    const gyroData: SensorData | null = useSensor({ sensorType: SensorType.Gyroscope });
+    const { settings } = useSettings();
+    const gyroData: SensorData | null = useSensor({ sensorType: SensorType.Gyroscope, updateIntervalMillis: settings.update_interval });
 
     const handelConnect = () => {
 
