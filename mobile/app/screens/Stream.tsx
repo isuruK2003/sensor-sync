@@ -15,7 +15,7 @@ export default function StreamScreen() {
 
         if (websocket === undefined || websocket?.readyState === WebSocket.CLOSED) {
             try {
-                const url: string = `ws://${domain}:${port}/ws/gyro/${uuid.v4()}`;
+                const url: string = `ws://${domain}:${port}/ws/${uuid.v4()}`;
 
                 const ws = new WebSocket(url);
 

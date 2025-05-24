@@ -26,7 +26,7 @@ export default function Home() {
     if (websocket === null || websocket?.readyState === WebSocket.CLOSED) {
       try {
         setConnectionStatus(ConnectionStatus.CONNECTING);
-        const url: string = `ws://${domain}:${port}/ws/gyro/${uuid()}`;
+        const url: string = `ws://${domain}:${port}/ws/${uuid()}`;
 
         const ws = new WebSocket(url);
 

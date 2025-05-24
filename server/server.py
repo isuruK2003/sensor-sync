@@ -31,7 +31,7 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-@app.websocket("/ws/gyro/{client_id}")
+@app.websocket("/ws/{client_id}")
 async def handle_gyro_data(websocket: WebSocket, client_id: str):
     await manager.connect(websocket)
     try:
