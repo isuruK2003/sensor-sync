@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
-
 import { Accelerometer, Gyroscope, Magnetometer } from 'expo-sensors';
-import { useSettings } from "./settings-services";
 
 export interface SensorData {
     t: number,
@@ -16,17 +14,16 @@ export enum SensorType {
     Magnetometer
 }
 
-export interface SensorConfig {
-    sensorType: SensorType
-    updateIntervalMillis: number
-}
-
 const sensorTypeMap = {
     [SensorType.Accelerometer]: Accelerometer,
     [SensorType.Gyroscope]: Gyroscope,
     [SensorType.Magnetometer]: Magnetometer
 }
 
+export interface SensorConfig {
+    sensorType: SensorType
+    updateIntervalMillis: number
+}
 
 export function useSensor({ sensorType, updateIntervalMillis }: SensorConfig): SensorData | null {
     const [data, setData] = useState<SensorData | null>(null);

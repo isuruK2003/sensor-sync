@@ -9,7 +9,23 @@ export default function StreamScreen() {
     const [port, setPort] = useState<string>('8000');
     const [websocket, setWebsocket] = useState<WebSocket>();
     const { settings } = useSettings();
-    const gyroData: SensorData | null = useSensor({ sensorType: SensorType.Gyroscope, updateIntervalMillis: settings.update_interval });
+
+    const sensorConfigs = [
+        {
+            sensorType: SensorType.Accelerometer,
+            updateIntervalMillis: settings.update_interval
+        },
+        {
+            sensorType: SensorType.Gyroscope,
+            updateIntervalMillis: settings.update_interval
+        },
+        {
+            sensorType: SensorType.Magnetometer,
+            updateIntervalMillis: settings.update_interval
+        }
+    ];
+
+    const sensorData: SensorData | null = useSensor(sensorConfigs[0])
 
     const handelConnect = () => {
 
@@ -39,10 +55,10 @@ export default function StreamScreen() {
     }
 
     useEffect(() => {
-        if (websocket !== null && websocket?.readyState === WebSocket.OPEN && gyroData !== null) {
-            websocket.send(JSON.stringify(gyroData));
+        if (websocket !== null && websocket?.readyState === WebSocket.OPEN && sensorData !== null) {
+            websocket.send(JSON.stringify(sensorData));
         }
-    }, [gyroData]);
+    }, [sensorData, websocket]);
 
     return (
         <View style={styles.container}>
